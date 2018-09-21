@@ -64,6 +64,7 @@ public interface DownloadClient {
         private DownloadClient.DownloadCallback mCallback;
         private DownloadClient.ProgressListener mProgressListener;
         private boolean mUseDuplicateLinks;
+        private boolean mOnionRouting;
 
         public DownloadClient build() throws IOException {
             if (mUrl == null) {
@@ -74,7 +75,7 @@ public interface DownloadClient {
                 throw new IllegalStateException("No download callback defined");
             }
             return new HttpURLConnectionClient(mUrl, mDestination, mProgressListener, mCallback,
-                    mUseDuplicateLinks);
+                    mUseDuplicateLinks, mOnionRouting);
         }
 
         public Builder setUrl(String url) {
@@ -99,6 +100,11 @@ public interface DownloadClient {
 
         public Builder setUseDuplicateLinks(boolean useDuplicateLinks) {
             mUseDuplicateLinks = useDuplicateLinks;
+            return this;
+        }
+
+        public Builder setUseOnionRouting(boolean onionRouting) {
+            mOnionRouting = onionRouting;
             return this;
         }
     }
