@@ -462,10 +462,14 @@ public class UpdatesActivity extends UpdatesListActivity implements UpdateImport
 
         final DownloadClient downloadClient;
         try {
+            if(Utils.isOnionRoutingEnabled(getApplicationContext())) {
+                Utils.requestStartOrbot(getApplicationContext());
+            }
             downloadClient = new DownloadClient.Builder()
                     .setUrl(url)
                     .setDestination(jsonFileTmp)
                     .setDownloadCallback(callback)
+                    .setUseOnionRouting(Utils.isOnionRoutingEnabled(getApplicationContext()))
                     .build();
         } catch (IOException exception) {
             Log.e(TAG, "Could not build download client");
@@ -569,6 +573,7 @@ public class UpdatesActivity extends UpdatesListActivity implements UpdateImport
     private void showPreferencesDialog() {
         View view = LayoutInflater.from(this).inflate(R.layout.preferences_dialog, null);
         Spinner autoCheckInterval = view.findViewById(R.id.preferences_auto_updates_check_interval);
+        SwitchCompat onionRouting = view.findViewById(R.id.preferences_onion_routing);
         SwitchCompat autoDelete = view.findViewById(R.id.preferences_auto_delete_updates);
         SwitchCompat meteredNetworkWarning = view.findViewById(
                 R.id.preferences_metered_network_warning);
@@ -581,6 +586,7 @@ public class UpdatesActivity extends UpdatesListActivity implements UpdateImport
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         autoCheckInterval.setSelection(Utils.getUpdateCheckSetting(this));
+        onionRouting.setChecked(prefs.getBoolean(Constants.PREF_ONION_ROUTING, false));
         autoDelete.setChecked(prefs.getBoolean(Constants.PREF_AUTO_DELETE_UPDATES, false));
         meteredNetworkWarning.setChecked(prefs.getBoolean(Constants.PREF_METERED_NETWORK_WARNING,
                 prefs.getBoolean(Constants.PREF_MOBILE_DATA_WARNING, true)));
@@ -621,6 +627,8 @@ public class UpdatesActivity extends UpdatesListActivity implements UpdateImport
                     prefs.edit()
                             .putInt(Constants.PREF_AUTO_UPDATES_CHECK_INTERVAL,
                                     autoCheckInterval.getSelectedItemPosition())
+                            .putBoolean(Constants.PREF_ONION_ROUTING,
+                                    onionRouting.isChecked() && Utils.isOrbotInstalled(getApplicationContext()))
                             .putBoolean(Constants.PREF_AUTO_DELETE_UPDATES, autoDelete.isChecked())
                             .putBoolean(Constants.PREF_METERED_NETWORK_WARNING,
                                     meteredNetworkWarning.isChecked())
@@ -632,6 +640,10 @@ public class UpdatesActivity extends UpdatesListActivity implements UpdateImport
                     } else {
                         UpdatesCheckReceiver.cancelRepeatingUpdatesCheck(this);
                         UpdatesCheckReceiver.cancelUpdatesCheck(this);
+                    }
+
+                    if(onionRouting.isChecked() && !Utils.isOrbotInstalled(getApplicationContext())) {
+                        showSnackbar(R.string.snack_orbot_not_available, Snackbar.LENGTH_LONG);
                     }
 
                     if (Utils.isABDevice()) {
