@@ -112,10 +112,14 @@ public class UpdatesCheckReceiver extends BroadcastReceiver {
         };
 
         try {
+            if(Utils.isOnionRoutingEnabled(context)) {
+                Utils.requestStartOrbot(context);
+            }
             DownloadClient downloadClient = new DownloadClient.Builder()
                     .setUrl(url)
                     .setDestination(jsonNew)
                     .setDownloadCallback(callback)
+                    .setUseOnionRouting(Utils.isOnionRoutingEnabled(context))
                     .build();
             downloadClient.start();
         } catch (IOException e) {
