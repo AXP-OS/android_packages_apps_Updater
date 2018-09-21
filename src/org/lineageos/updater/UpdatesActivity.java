@@ -361,10 +361,14 @@ public class UpdatesActivity extends UpdatesListActivity {
 
         final DownloadClient downloadClient;
         try {
+            if(Utils.isOnionRoutingEnabled(getApplicationContext())) {
+                Utils.requestStartOrbot(getApplicationContext());
+            }
             downloadClient = new DownloadClient.Builder()
                     .setUrl(url)
                     .setDestination(jsonFileTmp)
                     .setDownloadCallback(callback)
+                    .setUseOnionRouting(Utils.isOnionRoutingEnabled(getApplicationContext()))
                     .build();
         } catch (IOException exception) {
             Log.e(TAG, "Could not build download client");
@@ -444,6 +448,7 @@ public class UpdatesActivity extends UpdatesListActivity {
     private void showPreferencesDialog() {
         View view = LayoutInflater.from(this).inflate(R.layout.preferences_dialog, null);
         Spinner autoCheckInterval = view.findViewById(R.id.preferences_auto_updates_check_interval);
+        SwitchCompat onionRouting = view.findViewById(R.id.preferences_onion_routing);
         SwitchCompat autoDelete = view.findViewById(R.id.preferences_auto_delete_updates);
         SwitchCompat dataWarning = view.findViewById(R.id.preferences_mobile_data_warning);
         SwitchCompat abPerfMode = view.findViewById(R.id.preferences_ab_perf_mode);
@@ -455,6 +460,7 @@ public class UpdatesActivity extends UpdatesListActivity {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         autoCheckInterval.setSelection(Utils.getUpdateCheckSetting(this));
+        onionRouting.setChecked(prefs.getBoolean(Constants.PREF_ONION_ROUTING, false));
         autoDelete.setChecked(prefs.getBoolean(Constants.PREF_AUTO_DELETE_UPDATES, false));
         dataWarning.setChecked(prefs.getBoolean(Constants.PREF_MOBILE_DATA_WARNING, true));
         abPerfMode.setChecked(prefs.getBoolean(Constants.PREF_AB_PERF_MODE, false));
@@ -494,6 +500,8 @@ public class UpdatesActivity extends UpdatesListActivity {
                     prefs.edit()
                             .putInt(Constants.PREF_AUTO_UPDATES_CHECK_INTERVAL,
                                     autoCheckInterval.getSelectedItemPosition())
+                            .putBoolean(Constants.PREF_ONION_ROUTING,
+                                    onionRouting.isChecked() && Utils.isOrbotInstalled(getApplicationContext()))
                             .putBoolean(Constants.PREF_AUTO_DELETE_UPDATES, autoDelete.isChecked())
                             .putBoolean(Constants.PREF_MOBILE_DATA_WARNING, dataWarning.isChecked())
                             .putBoolean(Constants.PREF_AB_PERF_MODE, abPerfMode.isChecked())
@@ -504,6 +512,10 @@ public class UpdatesActivity extends UpdatesListActivity {
                     } else {
                         UpdatesCheckReceiver.cancelRepeatingUpdatesCheck(this);
                         UpdatesCheckReceiver.cancelUpdatesCheck(this);
+                    }
+
+                    if(onionRouting.isChecked() && !Utils.isOrbotInstalled(getApplicationContext())) {
+                        showSnackbar(R.string.snack_orbot_not_available, Snackbar.LENGTH_LONG);
                     }
 
                     if (Utils.isABDevice()) {
