@@ -358,12 +358,16 @@ public class UpdaterController {
         update.setFile(destination);
         DownloadClient downloadClient;
         try {
+            if(Utils.isOnionRoutingEnabled(mContext)) {
+                Utils.requestStartOrbot(mContext);
+            }
             downloadClient = new DownloadClient.Builder()
                     .setUrl(update.getDownloadUrl())
                     .setDestination(update.getFile())
                     .setDownloadCallback(getDownloadCallback(downloadId))
                     .setProgressListener(getProgressListener(downloadId))
                     .setUseDuplicateLinks(true)
+                    .setUseOnionRouting(Utils.isOnionRoutingEnabled(mContext))
                     .build();
         } catch (IOException exception) {
             Log.e(TAG, "Could not build download client");
@@ -398,6 +402,9 @@ public class UpdaterController {
             verifyUpdateAsync(downloadId);
             notifyUpdateChange(downloadId);
         } else {
+            if(Utils.isOnionRoutingEnabled(mContext)) {
+                Utils.requestStartOrbot(mContext);
+            }
             DownloadClient downloadClient;
             try {
                 downloadClient = new DownloadClient.Builder()
@@ -406,6 +413,7 @@ public class UpdaterController {
                         .setDownloadCallback(getDownloadCallback(downloadId))
                         .setProgressListener(getProgressListener(downloadId))
                         .setUseDuplicateLinks(true)
+                        .setUseOnionRouting(Utils.isOnionRoutingEnabled(mContext))
                         .build();
             } catch (IOException exception) {
                 Log.e(TAG, "Could not build download client");
