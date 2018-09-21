@@ -7,12 +7,16 @@ package org.lineageos.updater.download;
 import android.os.SystemClock;
 import android.util.Log;
 
+import org.lineageos.updater.misc.Utils;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.URL;
 import java.util.Comparator;
 import java.util.List;
@@ -31,6 +35,7 @@ public class HttpURLConnectionClient implements DownloadClient {
     private final DownloadClient.ProgressListener mProgressListener;
     private final DownloadClient.DownloadCallback mCallback;
     private final boolean mUseDuplicateLinks;
+    private final boolean mUseOnionRouting;
 
     private DownloadThread mDownloadThread;
 
@@ -45,8 +50,14 @@ public class HttpURLConnectionClient implements DownloadClient {
     HttpURLConnectionClient(String url, File destination,
             DownloadClient.ProgressListener progressListener,
             DownloadClient.DownloadCallback callback,
-            boolean useDuplicateLinks) throws IOException {
-        mClient = (HttpURLConnection) new URL(url).openConnection();
+            boolean useDuplicateLinks, boolean useOnionRouting) throws IOException {
+        mUseOnionRouting = useOnionRouting;
+        if(mUseOnionRouting) {
+            Proxy orbot = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("127.0.0.1", 9050));
+            mClient = (HttpURLConnection) new URL(url).openConnection(orbot);
+        } else {
+            mClient = (HttpURLConnection) new URL(url).openConnection();
+        }
         mDestination = destination;
         mProgressListener = progressListener;
         mCallback = callback;
@@ -166,7 +177,12 @@ public class HttpURLConnectionClient implements DownloadClient {
         private void changeClientUrl(URL newUrl) throws IOException {
             String range = mClient.getRequestProperty("Range");
             mClient.disconnect();
-            mClient = (HttpURLConnection) newUrl.openConnection();
+            if(mUseOnionRouting) {
+                Proxy orbot = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("127.0.0.1", 9050));
+                mClient = (HttpURLConnection) newUrl.openConnection(orbot);
+            } else {
+                mClient = (HttpURLConnection) newUrl.openConnection();
+            }
             if (range != null) {
                 mClient.setRequestProperty("Range", range);
             }
@@ -221,7 +237,7 @@ public class HttpURLConnectionClient implements DownloadClient {
                     }
                     Log.d(TAG, "Downloading from " + newUrl);
                     changeClientUrl(url);
-                    mClient.setConnectTimeout(5000);
+                    mClient.setConnectTimeout(mUseOnionRouting ? 45000 : 5000);
                     mClient.connect();
                     if (!isSuccessCode(mClient.getResponseCode())) {
                         throw new IOException("Server replied with " + mClient.getResponseCode());
@@ -246,6 +262,9 @@ public class HttpURLConnectionClient implements DownloadClient {
         public void run() {
             boolean justResumed = false;
             try {
+                if(mUseOnionRouting) {
+                    Utils.waitUntilOrbotIsAvailable();
+                }
                 mClient.setInstanceFollowRedirects(!mUseDuplicateLinks);
                 mClient.connect();
                 int responseCode = mClient.getResponseCode();
