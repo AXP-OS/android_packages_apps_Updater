@@ -59,6 +59,11 @@
     <string name="menu_auto_updates_check_interval_weekly">Once a week</string>
     <string name="menu_auto_updates_check_interval_monthly">Once a month</string>
     <string name="menu_auto_updates_check_interval_never">Never</string>
+    <string name="menu_server_choice">Server Choice</string>
+    <string name="menu_server_choice_primary">Primary</string>
+    <string name="menu_server_choice_secondary">0OTA_SERVER_CLEARNET_SECONDARY_NAME0</string>
+    <string name="menu_server_choice_onion_primary">Onion #1</string>
+    <string name="menu_server_choice_onion_secondary">Onion #2</string>
     <string name="menu_onion_routing">Perform requests over Tor</string>
     <string name="menu_auto_delete_updates">Delete updates when installed</string>
     <string name="menu_delete_update">Delete</string>
