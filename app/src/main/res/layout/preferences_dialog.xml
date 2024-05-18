@@ -33,6 +33,28 @@
             android:entries="@array/menu_auto_updates_check_interval_entries" />
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/menu_server_choice"
+            android:textColor="@color/inverted"
+            android:textSize="16sp" />
+
+        <Spinner
+            android:id="@+id/preferences_server_choice"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:entries="@array/menu_server_choice_entries" />
+    </LinearLayout>
+
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/preferences_onion_routing"
         android:layout_width="match_parent"
