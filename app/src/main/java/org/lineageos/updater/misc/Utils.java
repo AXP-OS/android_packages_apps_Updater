@@ -201,14 +201,33 @@ public class Utils {
         return listening;
     }
 
+    public static int getServerChoiceSetting(Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return preferences.getInt(Constants.PREF_SERVER_CHOICE,
+                Constants.PREF_SERVER_CHOICE_PRIMARY);
+    }
+
+    public static String getServerBaseUrl(Context context) {
+        switch (Utils.getServerChoiceSetting(context)) {
+            case Constants.PREF_SERVER_CHOICE_PRIMARY:
+            default:
+                return Constants.PREF_SERVER_CHOICE_PRIMARY_ACTUAL;
+            case Constants.PREF_SERVER_CHOICE_SECONDARY:
+                return Constants.PREF_SERVER_CHOICE_SECONDARY_ACTUAL;
+            case Constants.PREF_SERVER_CHOICE_ONION_PRIMARY:
+                return Constants.PREF_SERVER_CHOICE_ONION_PRIMARY_ACTUAL;
+            case Constants.PREF_SERVER_CHOICE_ONION_SECONDARY:
+                return Constants.PREF_SERVER_CHOICE_ONION_SECONDARY_ACTUAL;
+        }
+    }
+
     public static String getServerURL(Context context) {
         String incrementalVersion = SystemProperties.get(Constants.PROP_BUILD_VERSION_INCREMENTAL);
         String device = SystemProperties.get(Constants.PROP_NEXT_DEVICE,
                 SystemProperties.get(Constants.PROP_DEVICE));
-        String server = "0OTA_SERVER_CLEARNET0";
-        String serverOnion = "0OTA_SERVER_ONION0";
-        if(serverOnion.toLowerCase().startsWith("http") && isOnionRoutingEnabled(context)) {
-            server = serverOnion;
+        String server = getServerBaseUrl(context);
+        if (!isOnionRoutingEnabled(context) && server.toLowerCase().startsWith("http://") && server.toLowerCase().contains(".onion/")) {
+            server = Constants.PREF_SERVER_CHOICE_PRIMARY_ACTUAL;
         }
 
         return server + "?base=LineageOS&device=" + device + "&inc=" + incrementalVersion;
