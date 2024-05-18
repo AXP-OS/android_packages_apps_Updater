@@ -573,6 +573,7 @@ public class UpdatesActivity extends UpdatesListActivity implements UpdateImport
     private void showPreferencesDialog() {
         View view = LayoutInflater.from(this).inflate(R.layout.preferences_dialog, null);
         Spinner autoCheckInterval = view.findViewById(R.id.preferences_auto_updates_check_interval);
+        Spinner serverChoice = view.findViewById(R.id.preferences_server_choice);
         SwitchCompat onionRouting = view.findViewById(R.id.preferences_onion_routing);
         SwitchCompat autoDelete = view.findViewById(R.id.preferences_auto_delete_updates);
         SwitchCompat meteredNetworkWarning = view.findViewById(
@@ -586,6 +587,7 @@ public class UpdatesActivity extends UpdatesListActivity implements UpdateImport
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         autoCheckInterval.setSelection(Utils.getUpdateCheckSetting(this));
+        serverChoice.setSelection(Utils.getServerChoiceSetting(this));
         onionRouting.setChecked(prefs.getBoolean(Constants.PREF_ONION_ROUTING, false));
         autoDelete.setChecked(prefs.getBoolean(Constants.PREF_AUTO_DELETE_UPDATES, false));
         meteredNetworkWarning.setChecked(prefs.getBoolean(Constants.PREF_METERED_NETWORK_WARNING,
@@ -627,6 +629,8 @@ public class UpdatesActivity extends UpdatesListActivity implements UpdateImport
                     prefs.edit()
                             .putInt(Constants.PREF_AUTO_UPDATES_CHECK_INTERVAL,
                                     autoCheckInterval.getSelectedItemPosition())
+                            .putInt(Constants.PREF_SERVER_CHOICE,
+                                    serverChoice.getSelectedItemPosition())
                             .putBoolean(Constants.PREF_ONION_ROUTING,
                                     onionRouting.isChecked() && Utils.isOrbotInstalled(getApplicationContext()))
                             .putBoolean(Constants.PREF_AUTO_DELETE_UPDATES, autoDelete.isChecked())
