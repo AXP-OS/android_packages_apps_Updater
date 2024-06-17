@@ -222,7 +222,7 @@ public class Utils {
     }
 
     public static String getServerURL(Context context) {
-        String incrementalVersion = SystemProperties.get(Constants.PROP_BUILD_VERSION_INCREMENTAL);
+        String incrementalVersion = SystemProperties.get(Constants.PROP_BUILD_VERSION_INCREMENTAL).replaceAll("\\.", "");
         String device = SystemProperties.get(Constants.PROP_NEXT_DEVICE,
                 SystemProperties.get(Constants.PROP_DEVICE));
         String server = getServerBaseUrl(context);
@@ -230,7 +230,8 @@ public class Utils {
             server = Constants.PREF_SERVER_CHOICE_PRIMARY_ACTUAL;
         }
 
-        return server + "?base=LineageOS&device=" + device + "&inc=" + incrementalVersion;
+        String type = SystemProperties.get(Constants.PROP_RELEASE_TYPE).toLowerCase(Locale.ROOT);
+        return server + "/axp/api/v1/" + device + "/" + type + "/" + incrementalVersion;
     }
 
     public static String getUpgradeBlockedURL(Context context) {
