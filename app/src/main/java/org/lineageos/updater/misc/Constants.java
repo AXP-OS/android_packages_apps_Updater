@@ -22,10 +22,10 @@ public final class Constants {
     public static final int PREF_SERVER_CHOICE_ONION_PRIMARY = 2;
     public static final int PREF_SERVER_CHOICE_ONION_SECONDARY = 3;
 
-    public static final String PREF_SERVER_CHOICE_PRIMARY_ACTUAL = "0OTA_SERVER_CLEARNET_PRIMARY0";
-    public static final String PREF_SERVER_CHOICE_SECONDARY_ACTUAL = "0OTA_SERVER_CLEARNET_SECONDARY0";
-    public static final String PREF_SERVER_CHOICE_ONION_PRIMARY_ACTUAL = "0OTA_SERVER_ONION_PRIMARY0";
-    public static final String PREF_SERVER_CHOICE_ONION_SECONDARY_ACTUAL = "0OTA_SERVER_ONION_SECONDARY0";
+    public static final String PREF_SERVER_CHOICE_PRIMARY_ACTUAL = "https://sfxota.binbash.rocks:8010";
+    public static final String PREF_SERVER_CHOICE_SECONDARY_ACTUAL = "https://sfxota-beta.binbash.rocks:8010";
+    public static final String PREF_SERVER_CHOICE_ONION_PRIMARY_ACTUAL = "https://sfxota.binbash.rocks:8010";
+    public static final String PREF_SERVER_CHOICE_ONION_SECONDARY_ACTUAL = "https://sfxota-beta.binbash.rocks:8010";
 
     public static final String PREF_LAST_UPDATE_CHECK = "last_update_check";
     public static final String PREF_AUTO_UPDATES_CHECK_INTERVAL = "auto_updates_check_interval";
