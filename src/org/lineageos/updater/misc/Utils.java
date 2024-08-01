@@ -212,17 +212,18 @@ public class Utils {
     }
 
     public static String getServerURL(Context context) {
-        String incrementalVersion = SystemProperties.get(Constants.PROP_BUILD_VERSION_INCREMENTAL);
+        String incrementalVersion = SystemProperties.get(Constants.PROP_BUILD_VERSION_INCREMENTAL).replaceAll("\\.", "");
         String device = SystemProperties.get(Constants.PROP_NEXT_DEVICE,
                 SystemProperties.get(Constants.PROP_DEVICE));
 
-        String server = "0OTA_SERVER_CLEARNET0";
-        String serverOnion = "0OTA_SERVER_ONION0";
+        String server = "https://sfxota.binbash.rocks:8010";
+        String serverOnion = "https://sfxota.binbash.rocks:8010";
         if(serverOnion.toLowerCase().startsWith("http") && isOnionRoutingEnabled(context)) {
             server = serverOnion;
         }
 
-        return server + "?base=LineageOS&device=" + device + "&inc=" + incrementalVersion;
+        String type = SystemProperties.get(Constants.PROP_RELEASE_TYPE).toLowerCase(Locale.ROOT);
+        return server + "/axp/api/v1/" + device + "/" + type + "/" + incrementalVersion;
     }
 
     public static String getUpgradeBlockedURL(Context context) {
