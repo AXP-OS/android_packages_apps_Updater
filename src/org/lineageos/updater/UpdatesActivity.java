@@ -473,7 +473,7 @@ public class UpdatesActivity extends UpdatesListActivity {
             updateRecovery.setVisibility(View.GONE);
         } else if (Utils.isRecoveryUpdateExecPresent()) {
             updateRecovery.setChecked(
-                    SystemProperties.getBoolean(Constants.UPDATE_RECOVERY_PROPERTY, false));
+                    SystemProperties.getBoolean(Constants.UPDATE_RECOVERY_PROPERTY, true));
         } else {
             // There is no recovery updater script in the device, so the feature is considered
             // forcefully enabled, just to avoid users to be confused and complain that
