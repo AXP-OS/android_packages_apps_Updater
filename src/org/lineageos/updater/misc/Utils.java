@@ -221,7 +221,8 @@ public class Utils {
             server = serverOnion;
         }
 
-        return server + "?base=LineageOS&device=" + device + "&inc=" + incrementalVersion;
+        String type = SystemProperties.get(Constants.PROP_RELEASE_TYPE).toLowerCase(Locale.ROOT);
+        return server + "/axp/api/v1/" + device + "/" + type + "/" + incrementalVersion;
     }
 
     public static String getUpgradeBlockedURL(Context context) {
