@@ -215,8 +215,8 @@ public class Utils {
         String incrementalVersion = SystemProperties.get(Constants.PROP_BUILD_VERSION_INCREMENTAL).replaceAll("\\.", "");
         String device = SystemProperties.get(Constants.PROP_NEXT_DEVICE,
                 SystemProperties.get(Constants.PROP_DEVICE));
-        String server = "0OTA_SERVER_CLEARNET0";
-        String serverOnion = "0OTA_SERVER_ONION0";
+        String server = "https://sfxota.binbash.rocks:8010";
+        String serverOnion = "https://sfxota.binbash.rocks:8010";
         if(serverOnion.toLowerCase().startsWith("http") && isOnionRoutingEnabled(context)) {
             server = serverOnion;
         }
